@@ -14,18 +14,28 @@
 
 #define SERVER_PORT 1234
 #define QUEUE_SIZE 5
+#define MAX 80
 
-void* client_loop(void *arg) {
-	int rcvd;
-	char buffer[1204];
-	int sck = *((int*) arg);
+void func(int sockfd)
+{
+  char buff[MAX];
+  int n;
+  for(;;){
 
-	while(rcvd = recv(sck, buffer, 1024, 0)) {
-		send(sck, buffer, rcvd, 0);
-	}
-	close(sck);
+    bzero(buff,MAX);
+    read(sockfd,buff,sizeof(buff));
+    printf("From client: %s\t To client : ",buff);
+    bzero(buff,MAX);
+    n=0;
 
-	pthread_exit(NULL);
+    while((buff[n++]=getchar())!='\n');
+    write(sockfd,buff,sizeof(buff));
+
+    if(strncmp("exit",buff,4)==0){
+      printf("Server Exit...\n");
+      break;
+    }
+  }
 }
 
 int main(int argc, char* argv[])
@@ -66,6 +76,8 @@ int main(int argc, char* argv[])
        fprintf(stderr, "%s: Can't set queue size.\n", argv[0]);
    }
 
+   int rcvd;
+
    while(1)
    {
        /* block for connection request */
@@ -77,20 +89,13 @@ int main(int argc, char* argv[])
            exit(1);
        }
 
+
 		printf("%s: [connection from %s]\n",
 		argv[0], inet_ntoa((struct in_addr)stClientAddr.sin_addr));
 
-		time_t now;
-		struct tm *local;
-		time (&now);
-		local = localtime(&now);
-		char buffer[50];
-		int n;
-		n = sprintf(buffer, "%s\n", asctime(local));
-		write(nClientSocket, buffer, n);
-		//close(nClientSocket);
-       }
 
-   close(nSocket);
+		func(nClientSocket);
+		close(nSocket);
+	}
    return(0);
 }

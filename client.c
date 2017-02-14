@@ -9,12 +9,37 @@
 #include <arpa/inet.h>
 
 #define BUFSIZE 10000
-
+#define MAX 80
 char *server = "127.0.0.1";	/* adres IP pętli zwrotnej */
 char *protocol = "tcp";
 short service_port = 1234;	/* port usługi daytime */
 
 char bufor[BUFSIZE];
+
+void func(int sockfd)
+{
+	char buff[MAX];
+	int n;
+	for(;;){
+
+		bzero(buff,sizeof(buff));
+		printf("Enter the string : ");
+
+		n=0;
+		while((buff[n++]=getchar())!='\n');
+
+		write(sockfd,buff,sizeof(buff));
+		bzero(buff,sizeof(buff));
+		read(sockfd,buff,sizeof(buff));
+
+		printf("From Server : %s",buff);
+
+		if((strncmp(buff,"exit",4))==0){
+			printf("Client Exit...\n");
+			break;
+		}
+	}
+}
 
 int main ()
 {
@@ -39,15 +64,8 @@ int main ()
 		exit (EXIT_FAILURE);
 	}
 
-	// while ((odp = read (sck, bufor, BUFSIZE)) > 0)
+	func(sck);
+	close(sck);
 
-	// 	write (1, bufor, odp);
-	int c;
-	system ("/bin/stty raw");
-	while((c = getchar()) != EOF){
-		if(c == 32) fprintf(stdout, "%lu\n", (unsigned long)time(NULL)); 
-	}
-	//close (sck);
-
-	//exit (EXIT_SUCCESS);
+	exit (EXIT_SUCCESS);
 }
