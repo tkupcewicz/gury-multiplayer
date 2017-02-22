@@ -1,0 +1,131 @@
+<html>
+	<head>
+			<!--<link href='http://fonts.googleapis.com/css?family=Press+Start+2P&subset=latin,latin-ext,greek,cyrillic' rel='stylesheet' type='text/css'>-->
+		<style type="text/css">
+
+			body {
+				margin:0;
+				padding:0;
+				background:#000;
+				font-family: 'Press Start 2P', sans-serif;
+                color:deeppink;
+                overflow: hidden;
+			}
+            #info {
+                font-size:200%;
+                position:absolute;
+                right:0;
+                text-align: right;
+                z-index:9;
+            }
+            #info p {
+                margin:0;
+                padding:10px;
+            }
+            #rescues {
+                font-size:50%;
+            }
+			#config {
+				position:absolute;
+                display: none;
+			}
+            #gameover {
+                display: none;
+            }
+            .gui {
+                float:left;
+                text-align: center;
+				position: absolute;
+                font-size:300%;
+                top:10%;
+                width:100%;
+                z-index:3;
+
+            }
+            .gui h3 {
+            }
+            .gui p {
+                font-size:40%;
+                margin:0;
+
+            }
+            .gui span {
+                color: #8CD575;
+                font-size: 24px;
+            }
+            #game_container {
+                margin: 0 auto;
+                background:#8AB8FD;
+                position: absolute;
+                height:100%;
+                top: 0;
+                left: 0;
+                bottom: 0;
+                right: 0;
+            }
+            #main_canvas, #background {
+                position: absolute;
+                height:100%;
+                width:100%;
+            }
+            .btn {
+                bottom:0;
+                position:absolute;
+                z-index:5;
+                width:50%;
+                height:30%;
+                display:none;
+                text-align: center;
+
+            }
+            #jump {
+                left:0;
+            }
+            #rescue_jump {
+                right:0;
+            }
+
+		</style>
+        <meta content='width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0' name='viewport' />
+
+	</head>
+	<body">
+
+		<div id="config">
+			<p>1: <input id="1" type="number" value="" /></p>
+			<p>2: <input id="2" type="number" value="" /></p>
+			<p>3: <input id="3" type="number" value="" /></p>
+			<button onclick="javascript:randomize();">rand</button>
+		</div>
+
+		<div id="hello"  class="gui">
+			<h3>GURY</h3>
+			<p>press <span>spacebar</span> to play</p>
+            <p><span>enter</span> rescue jump</p>
+
+		</div>
+
+        <div id="gameover" class="gui" onclick="simulateKeyPress(114)">
+            <h3>GAMEOVER</h3>
+            <p>score:<span class="score"></span></p>
+            <p>best score:<span class="best"></span></p>
+            <p>press <span>R</span> to restart</p>
+        </div>
+
+        <div id="info">
+            <p id="score"></p>
+            <p id="rescues">
+
+            </p>
+        </div>
+        <div id="game_container">
+            <canvas id="main_canvas" style="z-index:2;"></canvas>
+            <canvas id="background" style="z-index:1;"></canvas>
+            <div id="jump" class="btn" onclick="simulateKeyPress(32);">jump</div>
+            <div id="rescue_jump" class="btn" onclick="simulateKeyPress(13);">rescue</div>
+        </div>
+	</body>
+	<script type="text/javascript" src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+	<script type="text/javascript" src="coolThings.js"></script>
+	<script type="text/javascript" src="class.js"></script>
+</html>
