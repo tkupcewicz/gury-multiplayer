@@ -85,15 +85,7 @@ void process_msg(int id, char* msg, char * response){
 
     printf("Message to split: %s\n", msg);
     tokens = str_split(msg, '#');
-    // if (tokens)
-    // {
-    //     int i;
-    //     for (i = 0; *(tokens + i); i++)
-    //     {
-    //         printf("month=[%s]\n", *(tokens + i));
-    //     }
-    //     printf("\n");
-    // }
+
     printf("First token:%s\n", tokens[0]);
     if(strcmp(tokens[0],"$CONNECT") == 0){
         sprintf(response,"%s#%d#%d", "$CONNECTED", SEED, id);
@@ -127,25 +119,17 @@ void process_msg(int id, char* msg, char * response){
         }
     }
     else if(strcmp(tokens[0],"$P") == 0){
-        // strcpy(response, org_msg);
         sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
         }
     }
     else if(strcmp(tokens[0],"$DIED") == 0){
-        // strcpy(response, org_msg);
         sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
         }
     }
-    // else{
-    //     strcpy(response, msg);
-    // }
-    // for(k = 0; k < MAX_CLIENTS; k++){
-    //     send(client_socket[k] , response , strlen(response) , 0 );
-    // }
     return;
 }
  
@@ -264,15 +248,6 @@ int main(int argc , char *argv[])
                     client_socket[i] = new_socket;
                     printf("Adding to list of sockets as %d\n" , i);
                     
-                    // char * tmp = malloc(2);
-                    // sprintf(tmp, "%d", i);
-                    // char * s = concat("PLAYERID#", tmp);
-                    // if( send(new_socket, s, strlen(s), 0) != strlen(s) ) 
-                    // {
-                    //     perror("send");
-                    // }
-                    // free(tmp);
-                    // free(s);
                     actual_clients++;
                      
                     break;
@@ -293,17 +268,14 @@ int main(int argc , char *argv[])
                       
                     close( sd );
                     client_socket[i] = 0;
-                    actual_clients--;   
+                    actual_clients--;
+                    ready_clients[i] = 0;   
                 }
                   
                 else
                 {
                     buffer[valread] = '\0';
                     process_msg(i, buffer, response);
-                    int k;
-                    for(k = 0; k < max_clients; k++){
-                      //      send(client_socket[k] , response , strlen(response) , 0 );
-                    }
                 }
             }
         }
