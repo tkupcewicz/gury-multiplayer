@@ -1,28 +1,28 @@
 import thread
 import webbrowser
+from random import randint
 import SimpleHTTPServer
 import SocketServer
-
-from random import randint
 
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
 
 class GuryWS(WebSocket):
 
-	def handleMessage(self):
-		pass
+    def handleMessage(self):
+        pass
 
-	def handleConnected(self):
-		print(self.address, 'connected')
+    def handleConnected(self):
+        print(self.address, 'connected')
 
-	def handleClose(self):
-		print(self.address, 'closed')
+    def handleClose(self):
+        print(self.address, 'closed')
 
 
 def start_ws(port):
     server = SimpleWebSocketServer('', port, GuryWS)
     server.serveforever()
+
 
 def start_webserver(port):
     httpd = SocketServer.TCPServer(("", port), SimpleHTTPServer.SimpleHTTPRequestHandler)
