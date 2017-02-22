@@ -51,7 +51,7 @@ if __name__ == '__main__':
         s.settimeout(0.01)
         while True:
             try:
-                data = s.recv(100)
+                data = s.recv(1000)
                 if data:
                     for d in data.split('$'):
                         print('TCP received:', d)
