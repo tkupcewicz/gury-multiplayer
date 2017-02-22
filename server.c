@@ -103,7 +103,7 @@ void process_msg(int id, char* msg, char * response){
             send(client_socket[k] , response , strlen(response) , 0 );
         }
     }
-    else if(strcmp(tokens[0],"#$READY") == 0){
+    else if(strcmp(tokens[0],"$READY") == 0){
         ready_clients[id] = 1;
         all_ready = 1;
         for(k = 0; k < MAX_CLIENTS; k++){
@@ -115,7 +115,7 @@ void process_msg(int id, char* msg, char * response){
                 send(client_socket[k] , response , strlen(response) , 0 );
             }
         }
-        else
+        else {
             sprintf(response,"%s", "$WAITING_FOR_OTHERS");
             send(client_socket[id] , response , strlen(response) , 0 );
         }
