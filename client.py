@@ -52,9 +52,9 @@ if __name__ == '__main__':
         while True:
             try:
                 data = s.recv(100)
-                # print('TCP received:', data)
                 if data:
                     for d in data.split('$'):
+                        print('TCP received:', d)
                         for i in server.connections:
                             server.connections[i].sendMessage(unicode(d))
             except socket.timeout:
