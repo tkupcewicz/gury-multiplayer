@@ -125,6 +125,7 @@ void process_msg(int id, char* msg, char * response){
         }
     }
     else if(strcmp(tokens[0],"$DIED") == 0){
+        ready_clients[id] = 0;
         sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
