@@ -80,7 +80,7 @@ void process_msg(int id, char* msg, char * response){
     strcpy(response, "\0");
     char **tokens;
     int k, all_ready;
-    char org_msg[100];
+    char org_msg[1025];
     strcpy(org_msg, msg);
 
     printf("Message to split: %s\n", msg);
@@ -164,7 +164,7 @@ int main(int argc , char *argv[])
 
     char *message = "Gury multiplayer v1.0 \r\n";
     char *full_message = "Game server is full \r\n";
-    char response[100];
+    char response[1025];
   
     for (i = 0; i < max_clients; i++) 
     {
