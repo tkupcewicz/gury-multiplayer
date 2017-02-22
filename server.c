@@ -8,19 +8,17 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <sys/time.h>
+#include <assert.h>
   
 #define TRUE   1
 #define FALSE  0
 #define PORT 4444
 #define SEED 999999
+#define MAX_CLIENTS 2
 
-char* process_msg(int id, char* msg){
-    char **tokens;
-    tokens = str_split(msg, '#');
-    if(strcmp(tokens[0],"NEW_GAME") == 0){
+int client_socket[MAX_CLIENTS];
+int ready_clients[MAX_CLIENTS];
 
-    }
-}
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -77,13 +75,73 @@ char* concat(const char *s1, const char *s2)
     strcat(result, s2);
     return result;
 }
+
+void process_msg(int id, char* msg, char * response){
+    strcpy(response, "\0");
+    char **tokens;
+    int k, all_ready;
+
+    printf("Message to split: %s\n", msg);
+    tokens = str_split(msg, '#');
+    if (tokens)
+    {
+        int i;
+        for (i = 0; *(tokens + i); i++)
+        {
+            printf("month=[%s]\n", *(tokens + i));
+        }
+        printf("\n");
+    }
+    if(strcmp(tokens[0],"CONNECT") == 0){
+        sprintf(response,"%s#%d#%d", "$CONNECTED", SEED, id);
+        send(client_socket[id] , response , strlen(response) , 0 );
+        sprintf(response,"%s#%d", "$ADD_PLAYER", id);
+    }
+    else if(strcmp(tokens[0],"READY") == 0){
+        ready_clients[id] = 1;
+        all_ready = 1;
+        for(k = 0; k < MAX_CLIENTS; k++){
+            if(ready_clients[k] == 0) all_ready = 0;
+        }
+        if(all_ready){
+            sprintf(response,"%s", "$ALL_READY");
+            for(k = 0; k < MAX_CLIENTS; k++){
+                send(client_socket[k] , response , strlen(response) , 0 );
+            }
+        }
+        else{
+            sprintf(response,"%s", "$WAITING_FOR_OTHERS");
+            send(client_socket[id] , response , strlen(response) , 0 );
+        }
+    }
+    else if(strcmp(tokens[0],"P") == 0){
+        strcpy(response, msg);
+        for(k = 0; k < MAX_CLIENTS; k++){
+            send(client_socket[k] , response , strlen(response) , 0 );
+        }
+    }
+    else if(strcmp(tokens[0],"DIED") == 0){
+        strcpy(response, msg);
+        for(k = 0; k < MAX_CLIENTS; k++){
+            send(client_socket[k] , response , strlen(response) , 0 );
+        }
+    }
+    // else{
+    //     strcpy(response, msg);
+    // }
+    // for(k = 0; k < MAX_CLIENTS; k++){
+    //     send(client_socket[k] , response , strlen(response) , 0 );
+    // }
+    return;
+}
  
 int main(int argc , char *argv[])
 {
     int opt = TRUE;
-    int master_socket , addrlen , new_socket , client_socket[2] , max_clients = 2 , activity, i , valread , sd, actual_clients = 0;
+    int master_socket , addrlen , new_socket, max_clients, activity, i , valread , sd, actual_clients = 0, all;
     int max_sd;
     struct sockaddr_in address;
+    max_clients = MAX_CLIENTS;
       
     char buffer[1025];
       
@@ -92,10 +150,12 @@ int main(int argc , char *argv[])
 
     char *message = "Gury multiplayer v1.0 \r\n";
     char *full_message = "Game server is full \r\n";
+    char response[100];
   
     for (i = 0; i < max_clients; i++) 
     {
         client_socket[i] = 0;
+        ready_clients[i] = 0;
     }
       
     if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0) 
@@ -225,9 +285,10 @@ int main(int argc , char *argv[])
                 else
                 {
                     buffer[valread] = '\0';
+                    process_msg(i, buffer, response);
                     int k;
                     for(k = 0; k < max_clients; k++){
-                        send(client_socket[k] , buffer , strlen(buffer) , 0 );
+                      //      send(client_socket[k] , response , strlen(response) , 0 );
                     }
                 }
             }
