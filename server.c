@@ -100,7 +100,10 @@ void process_msg(int id, char* msg, char * response){
         send(client_socket[id] , response , strlen(response) , 0 );
         sprintf(response,"%s#%d", "$ADD_PLAYER", id);
         for(k = 0; k < MAX_CLIENTS; k++){
-            send(client_socket[k] , response , strlen(response) , 0 );
+            if(client_socket[k] > 0){
+                sprintf(response,"%s#%d", "$ADD_PLAYER", k);
+                send(client_socket[id] , response , strlen(response) , 0 );
+            } 
         }
     }
     else if(strcmp(tokens[0],"$READY") == 0){
