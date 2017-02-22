@@ -46,7 +46,7 @@ if __name__ == '__main__':
         thread.start_new_thread(start_ws, (10999,))
         thread.start_new_thread(start_webserver, (p, p2))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        s.settimeout(0.01)
+        s.settimeout(0.1)
         s.connect((argv[1], int(argv[2])))
         while True:
             try:
