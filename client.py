@@ -1,3 +1,4 @@
+# coding: utf-8
 import thread
 import socket
 import webbrowser
@@ -51,11 +52,11 @@ if __name__ == '__main__':
         while True:
             try:
                 data = s.recv(100)
-                print('TCP received:', data)
+                # print('TCP received:', data)
                 if data:
-                    data = data[1:] if data[0] == '$' else data
-                    for i in server.connections:
-                        server.connections[i].sendMessage(unicode(data))
+                    for d in data.split('$'):
+                        for i in server.connections:
+                            server.connections[i].sendMessage(unicode(d))
             except socket.timeout:
                 pass
             except KeyboardInterrupt:
@@ -63,6 +64,6 @@ if __name__ == '__main__':
             if not q.empty():
                 ws_data = q.get()
                 s.send(ws_data)
-                print('TCP sending:', ws_data)
+                # print('TCP sending:', ws_data)
 
 
