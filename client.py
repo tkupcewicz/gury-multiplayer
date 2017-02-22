@@ -11,13 +11,13 @@ import SocketServer
 
 from SimpleWebSocketServer import SimpleWebSocketServer, WebSocket
 
-q = Queue.Queue()
+q = Queue.Queue(maxsize=0)
 
 
 class GuryWS(WebSocket):
     def handleMessage(self):
         print('WS received: ', self.data)
-        q.put(self.data)
+        q.put_nowait(self.data)
 
     def handleConnected(self):
         print(self.address, 'connected')
@@ -46,16 +46,22 @@ if __name__ == '__main__':
         thread.start_new_thread(start_ws, (10999,))
         thread.start_new_thread(start_webserver, (p, p2))
         s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.settimeout(0.01)
         s.connect((argv[1], int(argv[2])))
         while True:
-            data = s.recv(100)
-            print('TCP received:', data)
-            if data:
-                for i in server.connections:
-                    server.connections[i].sendMessage(data)
-
+            try:
+                data = s.recv(100)
+                print('TCP received:', data)
+                if data:
+                    data = data[1:] if data[0] == '$' else data
+                    for i in server.connections:
+                        server.connections[i].sendMessage(unicode(data))
+            except socket.timeout:
+                pass
+            except KeyboardInterrupt:
+                quit()
             if not q.empty():
-                ws_data = q.get_nowait()
+                ws_data = q.get()
                 s.send(ws_data)
                 print('TCP sending:', ws_data)
 
