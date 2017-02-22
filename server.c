@@ -121,15 +121,17 @@ void process_msg(int id, char* msg, char * response){
         }
     }
     else if(strcmp(tokens[0],"P") == 0){
-        strcpy(response, org_msg);
+        // strcpy(response, org_msg);
+        sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
-            send(client_socket[k] , org_msg , strlen(response) , 0 );
+            send(client_socket[k] , response , strlen(response) , 0 );
         }
     }
     else if(strcmp(tokens[0],"DIED") == 0){
-        strcpy(response, org_msg);
+        // strcpy(response, org_msg);
+        sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
-            send(client_socket[k] , org_msg , strlen(response) , 0 );
+            send(client_socket[k] , response , strlen(response) , 0 );
         }
     }
     // else{
