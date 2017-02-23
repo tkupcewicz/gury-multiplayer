@@ -67,14 +67,6 @@ char** str_split(char* a_str, const char a_delim)
     return result;
 }
 
-char* concat(const char *s1, const char *s2)
-{
-    char *result = malloc(strlen(s1)+strlen(s2)+1);
-    strcpy(result, s1);
-    strcat(result, s2);
-    return result;
-}
-
 void process_msg(int id, char* msg, char * response){
     strcpy(response, "\0");
     char **tokens;
@@ -128,7 +120,6 @@ void process_msg(int id, char* msg, char * response){
         // sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             if(client_socket[k] != 0){
-                printf("DIED SENT TO %d\n", k);
                send(client_socket[k] , org_msg , strlen(org_msg) , 0 ); 
            }
         }
