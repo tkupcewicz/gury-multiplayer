@@ -13,12 +13,11 @@
 #define TRUE   1
 #define FALSE  0
 #define PORT 4444
-#define SEED 999999
 #define MAX_CLIENTS 2
 
 int client_socket[MAX_CLIENTS];
 int ready_clients[MAX_CLIENTS];
-int debug_mode;
+int debug_mode, seed;
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -88,7 +87,7 @@ void process_msg(int id, char* msg, char * response){
 
     if(debug_mode) printf("First token:%s\n", tokens[0]);
     if(strcmp(tokens[0],"$CONNECT") == 0){
-        sprintf(response,"%s#%d#%d", "$CONNECTED", SEED, id);
+        sprintf(response,"%s#%d#%d", "$CONNECTED", seed, id);
         send(client_socket[id] , response , strlen(response) , 0 );
         sprintf(response,"%s#%d", "$ADD_PLAYER", id);
         for(k = 0; k < MAX_CLIENTS; k++){
@@ -128,10 +127,14 @@ void process_msg(int id, char* msg, char * response){
         ready_clients[id] = 0;
         // sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
-            send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
+            if(client_socket[k] != 0){
+                printf("DIED SENT TO %d\n", k);
+               send(client_socket[k] , org_msg , strlen(org_msg) , 0 ); 
+           }
         }
     }
 
+    // Freeing memory after splitting message 
     if (tokens)
     {
         int i;
@@ -153,6 +156,8 @@ int main(int argc , char *argv[])
     struct sockaddr_in address;
     debug_mode = 0;
     max_clients = MAX_CLIENTS;
+    srand(time(NULL));
+    seed = rand() % 10000;
       
     char buffer[1025];
 
@@ -163,7 +168,7 @@ int main(int argc , char *argv[])
     fd_set readfds;
 
     char *message = "Gury multiplayer v1.0 \r\n";
-    char *full_message = "Game server is full \r\n";
+    char *full_message = "$SERVER_FULL";
     char response[1025];
   
     for (i = 0; i < max_clients; i++) 
@@ -280,7 +285,7 @@ int main(int argc , char *argv[])
                 if ((valread = read( sd , buffer, 1024)) == 0)
                 {
                     getpeername(sd , (struct sockaddr*)&address , (socklen_t*)&addrlen);
-                    printf("Host disconnected , ip %s , port %d \n" , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+                    printf("Player disconnected , ip %s , port %d \n" , inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
                       
                     close( sd );
                     client_socket[i] = 0;
