@@ -13,7 +13,7 @@
 #define TRUE   1
 #define FALSE  0
 #define PORT 4444
-#define MAX_CLIENTS 2
+#define MAX_CLIENTS 4
 
 int client_socket[MAX_CLIENTS];
 int ready_clients[MAX_CLIENTS];
@@ -104,7 +104,7 @@ void process_msg(int id, char* msg, char * response){
         ready_clients[id] = 1;
         all_ready = 1;
         for(k = 0; k < MAX_CLIENTS; k++){
-            if(ready_clients[k] == 0) all_ready = 0;
+            if(ready_clients[k] == 0 && client_socket[k] != 0) all_ready = 0;
         }
         if(all_ready){
             sprintf(response,"%s", "$ALL_READY");
