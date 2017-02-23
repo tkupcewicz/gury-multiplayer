@@ -18,7 +18,7 @@
 
 int client_socket[MAX_CLIENTS];
 int ready_clients[MAX_CLIENTS];
-
+int debug_mode;
 
 char** str_split(char* a_str, const char a_delim)
 {
@@ -83,10 +83,10 @@ void process_msg(int id, char* msg, char * response){
     char org_msg[1025];
     strcpy(org_msg, msg);
 
-    printf("Message to split: %s\n", msg);
+    if(debug_mode) printf("Message to split: %s\n", msg);
     tokens = str_split(msg, '#');
 
-    printf("First token:%s\n", tokens[0]);
+    if(debug_mode) printf("First token:%s\n", tokens[0]);
     if(strcmp(tokens[0],"$CONNECT") == 0){
         sprintf(response,"%s#%d#%d", "$CONNECTED", SEED, id);
         send(client_socket[id] , response , strlen(response) , 0 );
@@ -119,18 +119,29 @@ void process_msg(int id, char* msg, char * response){
         }
     }
     else if(strcmp(tokens[0],"$P") == 0){
-        sprintf(response,"$%s", org_msg);
+        // sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
         }
     }
     else if(strcmp(tokens[0],"$DIED") == 0){
         ready_clients[id] = 0;
-        sprintf(response,"$%s", org_msg);
+        // sprintf(response,"$%s", org_msg);
         for(k = 0; k < MAX_CLIENTS; k++){
             send(client_socket[k] , org_msg , strlen(org_msg) , 0 );
         }
     }
+
+    if (tokens)
+    {
+        int i;
+        for (i = 0; *(tokens + i); i++)
+        {
+            free(*(tokens + i));
+        }
+        free(tokens);
+    }
+
     return;
 }
  
@@ -140,10 +151,14 @@ int main(int argc , char *argv[])
     int master_socket , addrlen , new_socket, max_clients, activity, i , valread , sd, actual_clients = 0, all;
     int max_sd;
     struct sockaddr_in address;
+    debug_mode = 0;
     max_clients = MAX_CLIENTS;
       
     char buffer[1025];
-      
+
+    for(i=1; i<argc; ++i){ 
+        if(strcmp(argv[1], "debug") == 0) debug_mode = 1;
+    }
 
     fd_set readfds;
 
