@@ -1,3 +1,4 @@
+
 # coding: utf-8
 import thread
 import socket
@@ -33,6 +34,7 @@ def start_ws(port):
 
 def start_webserver(port, port_ws):
     webbrowser.open_new_tab('http://127.0.0.1:' + str(port) + '/game/index.html?' + str(port_ws))
+    print 'http://127.0.0.1:' + str(port) + '/game/index.html?' + str(port_ws)
     httpd.serve_forever()
 
 
