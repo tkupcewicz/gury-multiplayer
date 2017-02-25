@@ -20,3 +20,8 @@ Browser with game should start up.
 `space` to jump, pressed after one results in shorter double-jump
 
 `enter` to super-jump - limited to 3 per run per player.
+
+- [ ] Separate thread for communication with each player
+- [ ] Lag compensation
+- [ ] Equal length of messages 
+- [ ] Rewrite communication from position to jump-event based.
