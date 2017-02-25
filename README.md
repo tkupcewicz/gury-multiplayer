@@ -21,6 +21,7 @@ Browser with game should start up.
 
 `enter` to super-jump - limited to 3 per run per player.
 
+TO DO:
 - [ ] Separate thread for communication with each player
 - [ ] Lag compensation
 - [ ] Equal length of messages 
